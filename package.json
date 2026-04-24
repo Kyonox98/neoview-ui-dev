@@ -1,0 +1,22 @@
+{
+  "name": "neoview-ui-dev",
+  "version": "0.1.0",
+  "source": "src/index.ts",
+  "scripts": {
+    "build": "parcel build",
+	"watch": "parcel watch"
+  },
+  "devDependencies": {
+    "parcel": "^2.16.4",
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "custom-card-helpers": "^2.0.0",
+    "home-assistant-js-websocket": "^9.6.0"
+  },
+  "targets": {
+    "default": {
+      "distDir": "dist"
+    }
+  }
+}
