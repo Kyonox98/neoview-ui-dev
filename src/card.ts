@@ -1,9 +1,16 @@
 import { html, type TemplateResult } from 'lit';
-import { BaseCard } from './base-card';
+import { BaseCard, type BaseCardSection } from './base-card';
+
+export interface MyTsCardSectionConfig {
+    id: string;
+    label: string;
+    value: string;
+}
 
 export interface MyTsCardConfig {
     type: string;
     title?: string;
+    sections?: MyTsCardSectionConfig[];
 }
 
 export class MyTsCard extends BaseCard {
@@ -15,16 +22,16 @@ export class MyTsCard extends BaseCard {
         }
 
         this._config = config;
+
+        this.sections =
+            config.sections?.map<BaseCardSection>((section) => ({
+                id: section.id,
+                label: section.label,
+                value: section.value,
+            })) ?? [];
     }
 
     render(): TemplateResult {
-        const title = this._config?.title ?? 'Ma super carte TS';
-
-        return html`
-            <div class="card">
-                <div class="card-header">${title}</div>
-                <div class="card-content">Contenu fixe pour le moment.</div>
-            </div>
-        `;
+        return super.render();
     }
 }

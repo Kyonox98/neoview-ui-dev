@@ -1,15 +1,27 @@
 import { LitElement, html, css, type TemplateResult } from 'lit';
+import { property } from 'lit/decorators.js';
+
+export interface BaseCardSection {
+    id: string;
+    label: string;
+    value: string;
+}
 
 export class BaseCard extends LitElement {
+    @property({ type: Array })
+    sections: BaseCardSection[] = [];
+
     render(): TemplateResult {
         return html`
             <div class="card">
-                <div class="card-header">
-                    <slot name="header">Titre par défaut</slot>
-                </div>
-                <div class="card-content">
-                    <slot>Contenu par défaut</slot>
-                </div>
+                ${this.sections.map(
+                    (section) => html`
+                        <div class="card-section">
+                            <div class="section-label">${section.label}</div>
+                            <div class="section-value">${section.value}</div>
+                        </div>
+                    `,
+                )}
             </div>
         `;
     }
@@ -20,12 +32,13 @@ export class BaseCard extends LitElement {
         }
 
         .card {
-            background: #1e1f23;
-            color: #ffffff;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(15, 15, 20, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
             padding: 16px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
             box-sizing: border-box;
         }
 
@@ -40,6 +53,28 @@ export class BaseCard extends LitElement {
         .card-content {
             font-size: 0.95rem;
             opacity: 0.9;
+        }
+
+        .card-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .card-section:last-child {
+            border-bottom: none;
+        }
+
+        .section-label {
+            opacity: 0.8;
+        }
+
+        .section-value {
+            font-weight: 600;
         }
     `;
 }
