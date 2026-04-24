@@ -1,19 +1,30 @@
-import { LitElement, html, type TemplateResult } from "lit";
-import type { LovelaceCardConfig } from "custom-card-helpers";
+import { html, type TemplateResult } from 'lit';
+import { BaseCard } from './base-card';
 
-export class MyTsCard extends LitElement {
-  setConfig(_config: LovelaceCardConfig): void {
-    // Pour l'instant, on ignore la config, mais la méthode existe
-  }
+export interface MyTsCardConfig {
+    type: string;
+    title?: string;
+}
 
-  render(): TemplateResult {
-    return html`
-      <div class="wrapper">
-        <h2>Ma super carte TS</h2>
-        <div>Contenu fixe pour le moment.</div>
-      </div>
-    `;
-  }
+export class MyTsCard extends BaseCard {
+    private _config?: MyTsCardConfig;
 
-  static styles = [];
+    setConfig(config: MyTsCardConfig): void {
+        if (!config) {
+            throw new Error('Config required');
+        }
+
+        this._config = config;
+    }
+
+    render(): TemplateResult {
+        const title = this._config?.title ?? 'Ma super carte TS';
+
+        return html`
+            <div class="card">
+                <div class="card-header">${title}</div>
+                <div class="card-content">Contenu fixe pour le moment.</div>
+            </div>
+        `;
+    }
 }

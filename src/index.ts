@@ -1,6 +1,6 @@
-import { MyTsCard } from "./card";
+import { MyTsCard } from './card';
 
-customElements.define("my-ts-card", MyTsCard);
+customElements.define('my-ts-card', MyTsCard);
 
 declare global {
     interface Window {
@@ -10,7 +10,7 @@ declare global {
 
 window.customCards = window.customCards || [];
 window.customCards.push({
-    type: "my-ts-card",
-    name: "My TS Card",
-    description: "A base TypeScript card"
+    type: 'my-ts-card',
+    name: 'My TS Card',
+    description: 'Base TypeScript card using BaseCard styles',
 });
