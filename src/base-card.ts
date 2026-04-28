@@ -1,80 +1,89 @@
-import { LitElement, html, css, type TemplateResult } from 'lit';
-import { property } from 'lit/decorators.js';
+import {
+    LitElement,
+    html,
+    type TemplateResult,
+    type PropertyValues,
+    type CSSResultGroup,
+} from 'lit';
+import { property, state } from 'lit/decorators.js';
+import type { HomeAssistant, LovelaceCardConfig } from 'custom-card-helpers';
+import { baseCardStyles } from './styles/base-card.styles';
 
-export interface BaseCardSection {
-    id: string;
-    label: string;
-    value: string;
+export interface BaseCardConfig extends LovelaceCardConfig {
+    title?: string;
+    show_title?: boolean;
+    cards?: LovelaceCardConfig[];
 }
 
 export class BaseCard extends LitElement {
-    @property({ type: Array })
-    sections: BaseCardSection[] = [];
+    @property({ attribute: false }) hass?: HomeAssistant;
+    @state() protected _config?: BaseCardConfig;
 
-    render(): TemplateResult {
+    protected showHeader: boolean = true;
+
+    setConfig(config: BaseCardConfig): void {
+        if (!config) throw new Error('Config required');
+        this._config = config;
+    }
+
+    getCardSize(): number {
+        return this._config?.cards?.length
+            ? Math.max(1, this._config.cards.length * 2)
+            : 3;
+    }
+
+    protected updated(changedProps: PropertyValues): void {
+        super.updated(changedProps);
+        if (changedProps.has('hass') && this.hass) {
+            this.shadowRoot
+                ?.querySelectorAll<any>('hui-card')
+                .forEach((card) => (card.hass = this.hass));
+        }
+    }
+
+    protected renderChildCards(): TemplateResult {
+        if (!this._config?.cards?.length) {
+            return html`
+                <div class="empty-state">
+                    <span>Aucune carte configurée.</span>
+                </div>
+            `;
+        }
         return html`
-            <div class="card">
-                ${this.sections.map(
-                    (section) => html`
-                        <div class="card-section">
-                            <div class="section-label">${section.label}</div>
-                            <div class="section-value">${section.value}</div>
-                        </div>
+            <div class="cards-container">
+                ${this._config.cards.map(
+                    (cardConfig) => html`
+                        <hui-card
+                            .config=${cardConfig}
+                            .hass=${this.hass}
+                        ></hui-card>
                     `,
                 )}
             </div>
         `;
     }
 
-    static styles = css`
-        :host {
-            display: block;
-        }
+    protected renderContent(): TemplateResult {
+        return this.renderChildCards();
+    }
 
-        .card {
-            background: rgba(15, 15, 20, 0.15);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            padding: 16px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-            box-sizing: border-box;
-        }
+    render(): TemplateResult {
+        const displayHeader =
+            this.showHeader &&
+            (this._config?.show_title ?? true) &&
+            !!this._config?.title;
 
-        .card-header {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding-bottom: 6px;
-        }
+        return html`
+            <div class="card">
+                ${displayHeader
+                    ? html`<div class="card-header">
+                          ${this._config!.title}
+                      </div>`
+                    : ''}
+                <div class="card-content">${this.renderContent()}</div>
+            </div>
+        `;
+    }
 
-        .card-content {
-            font-size: 0.95rem;
-            opacity: 0.9;
-        }
-
-        .card-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            font-size: 0.95rem;
-            opacity: 0.9;
-        }
-
-        .card-section:last-child {
-            border-bottom: none;
-        }
-
-        .section-label {
-            opacity: 0.8;
-        }
-
-        .section-value {
-            font-weight: 600;
-        }
-    `;
+    static styles: CSSResultGroup = baseCardStyles;
 }

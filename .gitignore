@@ -6,6 +6,9 @@ dist/
 .cache/
 .parcel-cache/
 
+# Prettier
+.prettierrc
+
 # Logs
 npm-debug.log*
 yarn-debug.log*
