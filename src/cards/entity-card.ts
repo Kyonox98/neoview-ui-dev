@@ -7,19 +7,17 @@ export interface EntityCardConfig extends BaseCardConfig {
 }
 
 export class EntityCard extends BaseCard {
-    // showHeader = true (inherited)
-
     setConfig(config: EntityCardConfig): void {
         if (!config.entity) throw new Error('entity required!');
         super.setConfig(config);
     }
 
-    private get _entityConfig(): EntityCardConfig {
-        return this._config as EntityCardConfig;
+    private get entityConfig(): EntityCardConfig {
+        return this.config as EntityCardConfig;
     }
 
     protected renderContent(): TemplateResult {
-        const state = this.hass?.states[this._entityConfig.entity];
+        const state = this.hass?.states[this.entityConfig.entity];
         return html`
             <span class="state">${state?.state ?? 'Indisponible'}</span>
             <span class="unit"

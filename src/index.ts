@@ -35,7 +35,7 @@ window.customCards.push(
         type: 'neoview-container-card',
         name: 'Neoview Container Card',
         description:
-            'Carte conteneur avec layout vertical, horizontal ou grille',
+            'Carte conteneur avec layout vertical, horizontal ou grille responsive',
         preview: true,
     },
 );

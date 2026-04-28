@@ -14,12 +14,12 @@ export class TextCard extends BaseCard {
         super.setConfig(config);
     }
 
-    private get _textConfig(): TextCardConfig {
-        return this._config as TextCardConfig;
+    private get textConfig(): TextCardConfig {
+        return this.config as TextCardConfig;
     }
 
     protected renderContent(): TemplateResult {
-        return html`<p class="text">${this._textConfig.text}</p>`;
+        return html`<p class="text">${this.textConfig.text}</p>`;
     }
 
     static styles: CSSResultGroup = [baseCardStyles, textCardStyles];
