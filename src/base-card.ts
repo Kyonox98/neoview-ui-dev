@@ -7,12 +7,14 @@ import {
 } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import type { HomeAssistant, LovelaceCardConfig } from 'custom-card-helpers';
-import { baseCardStyles } from './styles/base-card.styles';
+import { baseCardStyles } from './base-card.styles';
 
 export interface BaseCardConfig extends LovelaceCardConfig {
     title?: string;
     show_title?: boolean;
     seamless?: boolean;
+    padding?: number;
+    opacity?: number;
     cards?: LovelaceCardConfig[];
 }
 
@@ -79,8 +81,19 @@ export class BaseCard extends LitElement {
             (this.config?.show_title ?? true) &&
             !!this.config?.title;
 
+        const cardStyle = [
+            this.config?.padding != null
+                ? `--card-padding: ${this.config.padding}px`
+                : '',
+            this.config?.opacity != null
+                ? `--card-opacity: ${this.config.opacity}`
+                : '',
+        ]
+            .filter(Boolean)
+            .join('; ');
+
         return html`
-            <div class="card">
+            <div class="card" style=${cardStyle}>
                 ${displayHeader
                     ? html`<div class="card-header">${this.config!.title}</div>`
                     : ''}

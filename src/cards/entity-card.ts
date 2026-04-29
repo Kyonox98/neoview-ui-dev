@@ -1,9 +1,19 @@
 import { html, type CSSResultGroup, type TemplateResult } from 'lit';
 import { BaseCard, type BaseCardConfig } from '../base-card';
-import { baseCardStyles, entityCardStyles } from '../styles/base-card.styles';
+import { baseCardStyles } from '../base-card.styles';
+import { entityCardStyles } from '../styles/entity-card.styles';
 
 export interface EntityCardConfig extends BaseCardConfig {
     entity: string;
+    name?: string;
+    unit?: string;
+    icon?: string;
+    state_color?: boolean;
+    font_size?: string;
+    font_weight?: 'normal' | 'bold' | 'bolder' | 'lighter';
+    font_style?: 'normal' | 'italic';
+    align?: 'left' | 'center' | 'right';
+    color?: string;
 }
 
 export class EntityCard extends BaseCard {
@@ -16,13 +26,54 @@ export class EntityCard extends BaseCard {
         return this.config as EntityCardConfig;
     }
 
+    private getStateColor(domain: string, stateValue: string): string {
+        return `var(--state-${domain}-${stateValue}-color, var(--primary-text-color))`;
+    }
+
     protected renderContent(): TemplateResult {
-        const state = this.hass?.states[this.entityConfig.entity];
+        const cfg = this.entityConfig;
+        const stateObj = this.hass?.states[cfg.entity];
+        const stateValue = stateObj?.state ?? 'Indisponible';
+        const domain = cfg.entity.split('.')[0];
+
+        const displayName =
+            cfg.name ?? stateObj?.attributes.friendly_name ?? '';
+        const displayUnit =
+            cfg.unit ?? stateObj?.attributes.unit_of_measurement ?? '';
+
+        const stateColor = cfg.state_color
+            ? this.getStateColor(domain, stateValue)
+            : (cfg.color ?? undefined);
+
+        const justifyMap: Record<string, string> = {
+            left: 'flex-start',
+            center: 'center',
+            right: 'flex-end',
+        };
+
+        const stateStyle = [
+            cfg.font_size ? `--entity-font-size: ${cfg.font_size}` : '',
+            cfg.font_weight ? `--entity-font-weight: ${cfg.font_weight}` : '',
+            cfg.font_style ? `--entity-font-style: ${cfg.font_style}` : '',
+            cfg.align
+                ? `--entity-justify: ${justifyMap[cfg.align] ?? 'flex-start'}`
+                : '',
+            stateColor ? `--entity-color: ${stateColor}` : '',
+        ]
+            .filter(Boolean)
+            .join('; ');
+
         return html`
-            <span class="state">${state?.state ?? 'Indisponible'}</span>
-            <span class="unit"
-                >${state?.attributes.unit_of_measurement ?? ''}</span
-            >
+            <div class="entity-wrapper" style=${stateStyle}>
+                ${cfg.icon ? html`<ha-icon icon=${cfg.icon}></ha-icon>` : ''}
+                ${displayName
+                    ? html`<span class="name">${displayName}</span>`
+                    : ''}
+                <span class="state">${stateValue}</span>
+                ${displayUnit
+                    ? html`<span class="unit">${displayUnit}</span>`
+                    : ''}
+            </div>
         `;
     }
 
