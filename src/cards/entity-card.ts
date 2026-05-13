@@ -1,6 +1,6 @@
 import { html, type CSSResultGroup, type TemplateResult } from 'lit';
-import { BaseCard, type BaseCardConfig } from '../base-card';
-import { baseCardStyles } from '../base-card.styles';
+import { BaseCard, type BaseCardConfig } from './base-card';
+import { baseCardStyles } from '../styles/base-card.styles';
 import { entityCardStyles } from '../styles/entity-card.styles';
 
 export interface EntityCardConfig extends BaseCardConfig {
@@ -24,6 +24,27 @@ export class EntityCard extends BaseCard {
 
     private get entityConfig(): EntityCardConfig {
         return this.config as EntityCardConfig;
+    }
+
+    static getConfigElement() {
+        return document.createElement('neoview-entity-card-editor');
+    }
+    static getStubConfig() {
+        return {
+            type: 'custom:neoview-entity-card',
+            title: '',
+            show_title: false,
+            entity: '',
+            name: '',
+            unit: '',
+            icon: '',
+            color: '',
+            state_color: false,
+            font_size: '1rem',
+            font_weight: 'normal',
+            font_style: 'normal',
+            align: 'center',
+        };
     }
 
     private getStateColor(domain: string, stateValue: string): string {

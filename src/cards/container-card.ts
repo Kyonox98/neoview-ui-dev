@@ -1,6 +1,6 @@
 import { type CSSResultGroup, type TemplateResult, html } from 'lit';
-import { BaseCard, type BaseCardConfig } from '../base-card';
-import { baseCardStyles } from '../base-card.styles';
+import { BaseCard, type BaseCardConfig } from './base-card';
+import { baseCardStyles } from '../styles/base-card.styles';
 import { containerCardStyles } from '../styles/container-card.styles';
 
 export type ContainerLayout = 'vertical' | 'horizontal' | 'grid';
@@ -20,6 +20,17 @@ export class ContainerCard extends BaseCard {
 
     private get containerConfig(): ContainerCardConfig {
         return this.config as ContainerCardConfig;
+    }
+
+    static getConfigElement() {
+        return document.createElement('neoview-container-card-editor');
+    }
+    static getStubConfig() {
+        return {
+            type: 'custom:neoview-container-card',
+            layout: 'vertical',
+            cards: [],
+        };
     }
 
     protected renderContent(): TemplateResult {

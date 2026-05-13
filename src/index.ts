@@ -1,6 +1,9 @@
 import { EntityCard } from './cards/entity-card';
 import { TextCard } from './cards/text-card';
 import { ContainerCard } from './cards/container-card';
+import './editors/text-card.editor';
+import './editors/entity-card.editor';
+import './editors/container-card.editor';
 
 customElements.define('neoview-entity-card', EntityCard);
 customElements.define('neoview-text-card', TextCard);

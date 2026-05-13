@@ -7,7 +7,7 @@ import {
 } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import type { HomeAssistant, LovelaceCardConfig } from 'custom-card-helpers';
-import { baseCardStyles } from './base-card.styles';
+import { baseCardStyles } from '../styles/base-card.styles';
 
 export interface BaseCardConfig extends LovelaceCardConfig {
     title?: string;

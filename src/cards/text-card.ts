@@ -1,6 +1,6 @@
 import { html, type CSSResultGroup, type TemplateResult } from 'lit';
-import { BaseCard, type BaseCardConfig } from '../base-card';
-import { baseCardStyles } from '../base-card.styles';
+import { BaseCard, type BaseCardConfig } from './base-card';
+import { baseCardStyles } from '../styles/base-card.styles';
 import { textCardStyles } from '../styles/text-card.styles';
 
 export interface TextCardConfig extends BaseCardConfig {
@@ -22,6 +22,21 @@ export class TextCard extends BaseCard {
 
     private get textConfig(): TextCardConfig {
         return this.config as TextCardConfig;
+    }
+
+    static getConfigElement() {
+        return document.createElement('neoview-text-card-editor');
+    }
+
+    static getStubConfig() {
+        return {
+            type: 'custom:neoview-text-card',
+            text: 'Mon texte',
+            font_size: '1rem',
+            font_weight: 'normal',
+            font_style: 'normal',
+            align: 'center',
+        };
     }
 
     protected renderContent(): TemplateResult {
