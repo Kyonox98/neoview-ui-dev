@@ -13,7 +13,6 @@ export type ContainerLayout = 'vertical' | 'horizontal' | 'grid';
 export interface ContainerCardConfig extends BaseCardConfig {
     layout?: ContainerLayout;
     columns?: number;
-    min_width?: number;
     gap?: number;
     divider?: boolean;
 }
@@ -132,10 +131,7 @@ export class ContainerCard extends BaseCard {
         container.dataset['layout'] = layout;
 
         if (layout === 'grid') {
-            const minWidth = this.containerConfig?.min_width;
-            const template = minWidth
-                ? `repeat(auto-fill, minmax(${minWidth}px, 1fr))`
-                : `repeat(${columns}, minmax(0, 1fr))`;
+            const template = `repeat(${columns}, minmax(0, 1fr))`;
             container.style.setProperty('--grid-template', template);
         } else {
             container.style.removeProperty('--grid-template');

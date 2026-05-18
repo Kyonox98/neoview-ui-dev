@@ -112,7 +112,7 @@ export const BASE_CARD_LABELS: HaLabels = {
     padding: 'Padding (px)',
     opacity: 'Opacité',
     font_size: 'Taille de police (ex: 1.2rem)',
-    font_weight: 'Graisse',
+    font_weight: 'Épaisseur',
     font_style: 'Style',
     align: 'Alignement',
     color: 'Couleur',
@@ -201,17 +201,12 @@ export const CONTAINER_CARD_GRID_SCHEMA: HaFormSchema[] = [
         name: 'columns',
         selector: { number: { min: 1, max: 12, step: 1, mode: 'box' } },
     },
-    {
-        name: 'min_width',
-        selector: { number: { min: 50, max: 800, step: 10, mode: 'box' } },
-    },
 ];
 
 export const CONTAINER_CARD_LABELS: HaLabels = {
     ...BASE_CARD_LABELS,
     layout: 'Layout',
     columns: 'Colonnes',
-    min_width: 'Largeur min. par colonne (px)',
     gap: 'Gap entre les cartes (px)',
     divider: 'Séparateur',
 };

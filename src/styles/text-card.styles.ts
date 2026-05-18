@@ -3,7 +3,7 @@ import { css } from 'lit';
 export const textCardStyles = css`
     .text {
         margin: 0;
-        font-size: var(--text-font-size, 1rem);
+        font-size: var(--text-font-size, var(--neoview-font-size-md));
         font-weight: var(--text-font-weight, normal);
         font-style: var(--text-font-style, normal);
         color: var(--text-color, var(--primary-text-color));

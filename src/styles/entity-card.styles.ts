@@ -2,7 +2,7 @@ import { css } from 'lit';
 
 export const entityCardStyles = css`
     .entity-wrapper {
-        font-size: var(--entity-font-size, 1rem);
+        font-size: var(--entity-font-size, var(--neoview-font-size-md));
         font-weight: var(--entity-font-weight, normal);
         font-style: var(--entity-font-style, normal);
         color: var(--entity-color, var(--primary-text-color));
@@ -21,12 +21,12 @@ export const entityCardStyles = css`
     }
 
     ha-icon {
-        --mdc-icon-size: var(--entity-font-size, 1rem);
+        --mdc-icon-size: var(--entity-font-size, var(--neoview-font-size-md));
         display: flex;
         align-items: center;
         justify-content: center;
-        height: var(--entity-font-size, 1rem);
-        width: var(--entity-font-size, 1rem);
+        height: var(--entity-font-size, var(--neoview-font-size-md));
+        width: var(--entity-font-size, var(--neoview-font-size-md));
     }
 
     .name,
