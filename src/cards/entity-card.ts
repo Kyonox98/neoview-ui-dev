@@ -65,6 +65,14 @@ export class EntityCard extends BaseCard {
     protected override renderContent(): TemplateResult {
         const cfg = this.entityConfig;
         const stateObj = this.hass?.states[cfg.entity];
+
+        if (!stateObj) {
+            return this.renderEmptyState(
+                `Entité introuvable : ${cfg.entity}`,
+                'error',
+            );
+        }
+
         const stateValue = stateObj?.state ?? 'Indisponible';
         const domain = cfg.entity.split('.')[0];
 

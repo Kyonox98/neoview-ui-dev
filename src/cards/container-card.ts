@@ -57,11 +57,7 @@ export class ContainerCard extends BaseCard {
 
     protected override renderContent(): TemplateResult {
         if (!this.config?.cards?.length) {
-            return html`
-                <div class="empty-state">
-                    <span>Aucune carte configurée.</span>
-                </div>
-            `;
+            return this.renderEmptyState('Aucune carte configurée.');
         }
 
         const layout = this.resolveLayout();

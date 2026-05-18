@@ -49,15 +49,21 @@ export abstract class BaseCard extends LitElement {
         }
     }
 
-    protected renderChildCards(): TemplateResult {
-        if (!this.config?.cards?.length) {
-            return html`
-                <div class="empty-state">
-                    <span>Aucune carte configurée.</span>
-                </div>
-            `;
-        }
+    protected renderEmptyState(
+        message = 'Aucun contenu configuré.',
+        type: 'info' | 'error' = 'info',
+    ): TemplateResult {
+        return html`
+            <div class="empty-state ${type}">
+                <span>${message}</span>
+            </div>
+        `;
+    }
 
+    protected renderContent(): TemplateResult {
+        if (!this.config?.cards?.length) {
+            return this.renderEmptyState('Aucune carte configurée.');
+        }
         return html`
             <div class="cards-container">
                 ${this.config.cards.map(
@@ -70,10 +76,6 @@ export abstract class BaseCard extends LitElement {
                 )}
             </div>
         `;
-    }
-
-    protected renderContent(): TemplateResult {
-        return this.renderChildCards();
     }
 
     override render(): TemplateResult {

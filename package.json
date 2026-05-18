@@ -1,6 +1,6 @@
 {
   "name": "neoview-ui-dev",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Custom Lovelace cards for Home Assistant based on a shared BaseCard architecture.",
   "keywords": [
     "home-assistant",

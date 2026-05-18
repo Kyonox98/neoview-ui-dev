@@ -45,4 +45,15 @@ export const baseCardStyles = css`
         opacity: 0.9;
         min-width: 0;
     }
+
+    .empty-state {
+        opacity: 0.5;
+        font-style: italic;
+        text-align: center;
+        padding: 8px 0;
+    }
+    .empty-state.error {
+        color: var(--error-color);
+        opacity: 1;
+    }
 `;

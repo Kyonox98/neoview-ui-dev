@@ -16,7 +16,7 @@ export class TextCard extends BaseCard {
     protected override showHeader = false;
 
     override setConfig(config: TextCardConfig): void {
-        if (!config.text) throw new Error('[TextCard] text required');
+        // if (!config.text) throw new Error('[TextCard] text required');
         super.setConfig(config);
     }
 
@@ -45,6 +45,10 @@ export class TextCard extends BaseCard {
 
     protected override renderContent(): TemplateResult {
         const cfg = this.textConfig;
+
+        if (!cfg.text?.trim()) {
+            return this.renderEmptyState('Aucun texte configuré.');
+        }
 
         const textStyle = [
             cfg.font_size ? `--text-font-size: ${cfg.font_size}` : '',
