@@ -18,7 +18,7 @@ export interface BaseCardConfig extends LovelaceCardConfig {
     cards?: LovelaceCardConfig[];
 }
 
-export class BaseCard extends LitElement {
+export abstract class BaseCard extends LitElement {
     @property({ attribute: false }) hass?: HomeAssistant;
     @state() protected config?: BaseCardConfig;
     @property({ type: Boolean, reflect: true }) seamless = false;
@@ -26,22 +26,23 @@ export class BaseCard extends LitElement {
     protected showHeader: boolean = true;
 
     setConfig(config: BaseCardConfig): void {
-        if (!config) throw new Error('Config required');
-        this.config = config;
-        this.seamless = !!(config as any).seamless;
+        if (!config) throw new Error('[BaseCard] Config required');
+        this.config = { ...config };
+        this.seamless = !!config.seamless;
     }
 
     getCardSize(): number {
-        return this.config?.cards?.length
-            ? Math.max(1, this.config.cards.length / 2)
-            : 3;
+        const childCount = this.config?.cards?.length ?? 0;
+        return childCount > 0 ? Math.max(1, Math.ceil(childCount / 2)) : 3;
     }
 
-    protected updated(changedProps: PropertyValues): void {
+    protected override updated(changedProps: PropertyValues): void {
         super.updated(changedProps);
-        if (changedProps.has('hass')) {
+        if (changedProps.has('hass') && this.hass) {
             this.shadowRoot
-                ?.querySelectorAll<any>('hui-card')
+                ?.querySelectorAll<
+                    HTMLElement & { hass?: HomeAssistant }
+                >('hui-card')
                 .forEach((card) => {
                     card.hass = this.hass;
                 });
@@ -75,13 +76,13 @@ export class BaseCard extends LitElement {
         return this.renderChildCards();
     }
 
-    render(): TemplateResult {
+    override render(): TemplateResult {
         const displayHeader =
             this.showHeader &&
             (this.config?.show_title ?? true) &&
             !!this.config?.title;
 
-        const cardStyle = [
+        const inlineStyles = [
             this.config?.padding != null
                 ? `--card-padding: ${this.config.padding}px`
                 : '',
@@ -93,14 +94,14 @@ export class BaseCard extends LitElement {
             .join('; ');
 
         return html`
-            <div class="card" style=${cardStyle}>
+            <ha-card style=${inlineStyles}>
                 ${displayHeader
                     ? html`<div class="card-header">${this.config!.title}</div>`
                     : ''}
                 <div class="card-content">${this.renderContent()}</div>
-            </div>
+            </ha-card>
         `;
     }
 
-    static styles: CSSResultGroup = baseCardStyles;
+    static override styles: CSSResultGroup = baseCardStyles;
 }

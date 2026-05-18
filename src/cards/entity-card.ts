@@ -16,9 +16,15 @@ export interface EntityCardConfig extends BaseCardConfig {
     color?: string;
 }
 
+const ALIGN_MAP: Record<string, string> = {
+    left: 'flex-start',
+    center: 'center',
+    right: 'flex-end',
+};
+
 export class EntityCard extends BaseCard {
-    setConfig(config: EntityCardConfig): void {
-        if (!config.entity) throw new Error('entity required!');
+    override setConfig(config: EntityCardConfig): void {
+        if (!config.entity) throw new Error('[EntityCard] entity required');
         super.setConfig(config);
     }
 
@@ -26,10 +32,11 @@ export class EntityCard extends BaseCard {
         return this.config as EntityCardConfig;
     }
 
-    static getConfigElement() {
+    static getConfigElement(): HTMLElement {
         return document.createElement('neoview-entity-card-editor');
     }
-    static getStubConfig() {
+
+    static getStubConfig(): EntityCardConfig {
         return {
             type: 'custom:neoview-entity-card',
             title: '',
@@ -47,11 +54,15 @@ export class EntityCard extends BaseCard {
         };
     }
 
+    override getCardSize(): number {
+        return 2;
+    }
+
     private getStateColor(domain: string, stateValue: string): string {
         return `var(--state-${domain}-${stateValue}-color, var(--primary-text-color))`;
     }
 
-    protected renderContent(): TemplateResult {
+    protected override renderContent(): TemplateResult {
         const cfg = this.entityConfig;
         const stateObj = this.hass?.states[cfg.entity];
         const stateValue = stateObj?.state ?? 'Indisponible';
@@ -66,18 +77,12 @@ export class EntityCard extends BaseCard {
             ? this.getStateColor(domain, stateValue)
             : (cfg.color ?? undefined);
 
-        const justifyMap: Record<string, string> = {
-            left: 'flex-start',
-            center: 'center',
-            right: 'flex-end',
-        };
-
         const stateStyle = [
             cfg.font_size ? `--entity-font-size: ${cfg.font_size}` : '',
             cfg.font_weight ? `--entity-font-weight: ${cfg.font_weight}` : '',
             cfg.font_style ? `--entity-font-style: ${cfg.font_style}` : '',
             cfg.align
-                ? `--entity-justify: ${justifyMap[cfg.align] ?? 'flex-start'}`
+                ? `--entity-justify: ${ALIGN_MAP[cfg.align] ?? 'flex-start'}`
                 : '',
             stateColor ? `--entity-color: ${stateColor}` : '',
         ]
@@ -98,5 +103,5 @@ export class EntityCard extends BaseCard {
         `;
     }
 
-    static styles: CSSResultGroup = [baseCardStyles, entityCardStyles];
+    static override styles: CSSResultGroup = [baseCardStyles, entityCardStyles];
 }

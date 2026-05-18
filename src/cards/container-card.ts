@@ -1,4 +1,9 @@
-import { type CSSResultGroup, type TemplateResult, html } from 'lit';
+import {
+    type CSSResultGroup,
+    type TemplateResult,
+    type PropertyValues,
+    html,
+} from 'lit';
 import { BaseCard, type BaseCardConfig } from './base-card';
 import { baseCardStyles } from '../styles/base-card.styles';
 import { containerCardStyles } from '../styles/container-card.styles';
@@ -14,7 +19,7 @@ export interface ContainerCardConfig extends BaseCardConfig {
 }
 
 export class ContainerCard extends BaseCard {
-    setConfig(config: ContainerCardConfig): void {
+    override setConfig(config: ContainerCardConfig): void {
         super.setConfig(config);
     }
 
@@ -22,10 +27,11 @@ export class ContainerCard extends BaseCard {
         return this.config as ContainerCardConfig;
     }
 
-    static getConfigElement() {
+    static getConfigElement(): HTMLElement {
         return document.createElement('neoview-container-card-editor');
     }
-    static getStubConfig() {
+
+    static getStubConfig(): ContainerCardConfig {
         return {
             type: 'custom:neoview-container-card',
             layout: 'vertical',
@@ -33,20 +39,36 @@ export class ContainerCard extends BaseCard {
         };
     }
 
-    protected renderContent(): TemplateResult {
+    override getCardSize(): number {
+        const childCount = this.config?.cards?.length ?? 0;
+        const layout = this.resolveLayout();
+        const columns = this.containerConfig?.columns ?? 2;
+        if (layout === 'grid' || layout === 'horizontal') {
+            return Math.max(1, Math.ceil(childCount / columns));
+        }
+        return Math.max(1, childCount);
+    }
+
+    private resolveLayout(): ContainerLayout {
+        const raw = this.containerConfig?.layout ?? 'vertical';
+        const columns = this.containerConfig?.columns ?? 2;
+        return raw !== 'vertical' && columns === 1 ? 'vertical' : raw;
+    }
+
+    protected override renderContent(): TemplateResult {
         if (!this.config?.cards?.length) {
-            return html`<div class="empty-state">
-                <span>Aucune carte configurée.</span>
-            </div>`;
+            return html`
+                <div class="empty-state">
+                    <span>Aucune carte configurée.</span>
+                </div>
+            `;
         }
 
-        const rawLayout = this.containerConfig?.layout ?? 'vertical';
+        const layout = this.resolveLayout();
         const columns =
-            rawLayout === 'grid'
+            layout === 'grid'
                 ? (this.containerConfig?.columns ?? 2)
                 : this.config.cards.length;
-        const layout =
-            rawLayout !== 'vertical' && columns === 1 ? 'vertical' : rawLayout;
         const showDivider = this.containerConfig?.divider ?? false;
 
         if (layout === 'vertical') {
@@ -101,19 +123,17 @@ export class ContainerCard extends BaseCard {
         `;
     }
 
-    protected updated(changedProps: import('lit').PropertyValues): void {
+    protected override updated(changedProps: PropertyValues): void {
         super.updated(changedProps);
 
-        const rawLayout = this.containerConfig?.layout ?? 'vertical';
+        const layout = this.resolveLayout();
         const columns = this.containerConfig?.columns ?? 2;
-        const layout =
-            rawLayout !== 'vertical' && columns === 1 ? 'vertical' : rawLayout;
         const container =
             this.shadowRoot?.querySelector<HTMLElement>('.cards-container');
 
         if (!container) return;
 
-        container.dataset.layout = layout;
+        container.dataset['layout'] = layout;
 
         if (layout === 'grid') {
             const minWidth = this.containerConfig?.min_width;
@@ -133,13 +153,10 @@ export class ContainerCard extends BaseCard {
         } else {
             container.style.removeProperty('--cards-gap');
         }
-
-        // if (this.containerConfig?.divider) {
-        //     container.style.setProperty('--show-divider', '1');
-        // } else {
-        //     container.style.removeProperty('--show-divider');
-        // }
     }
 
-    static styles: CSSResultGroup = [baseCardStyles, containerCardStyles];
+    static override styles: CSSResultGroup = [
+        baseCardStyles,
+        containerCardStyles,
+    ];
 }

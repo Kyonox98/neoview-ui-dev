@@ -29,14 +29,14 @@ const CARD_STUBS: Record<string, LovelaceCardConfig> = {
 export class ContainerCardEditor extends BaseCardEditor {
     @state() private _newCardType = 'custom:neoview-text-card';
 
-    protected getSchema(): HaFormSchema[] {
+    protected override getSchema(): HaFormSchema[] {
         const layout = (this.config?.layout as string) ?? 'vertical';
         return layout === 'grid'
             ? CONTAINER_CARD_GRID_SCHEMA
             : CONTAINER_CARD_SCHEMA;
     }
 
-    protected computeLabel(schema: HaFormSchema): string {
+    protected override computeLabel(schema: HaFormSchema): string {
         const name = (schema as HaFormFieldSchema).name;
         return CONTAINER_CARD_LABELS[name] ?? name;
     }
@@ -51,46 +51,54 @@ export class ContainerCardEditor extends BaseCardEditor {
         return labels[name] ?? name;
     }
 
-    private _dispatchConfig(config: LovelaceCardConfig): void {
-        this.dispatchEvent(
-            new CustomEvent('config-changed', {
-                detail: { config },
-                bubbles: true,
-                composed: true,
-            }),
-        );
-    }
-
     private _addCard(): void {
         const cards = [...(this.config?.cards ?? [])];
         cards.push(
             CARD_STUBS[this._newCardType] ?? { type: this._newCardType },
         );
-        this._dispatchConfig({
-            type: this.config!.type,
-            ...this.config,
-            cards,
-        });
+        this._valueChanged(
+            new CustomEvent('value-changed', {
+                detail: {
+                    value: {
+                        type: this.config!.type,
+                        ...this.config,
+                        cards,
+                    },
+                },
+            }),
+        );
     }
 
     private _removeCard(index: number): void {
         const cards = [...(this.config?.cards ?? [])];
         cards.splice(index, 1);
-        this._dispatchConfig({
-            type: this.config!.type,
-            ...this.config,
-            cards,
-        });
+        this._valueChanged(
+            new CustomEvent('value-changed', {
+                detail: {
+                    value: {
+                        type: this.config!.type,
+                        ...this.config,
+                        cards,
+                    },
+                },
+            }),
+        );
     }
 
     private _updateCard(index: number, updated: LovelaceCardConfig): void {
         const cards = [...(this.config?.cards ?? [])];
         cards[index] = updated;
-        this._dispatchConfig({
-            type: this.config!.type,
-            ...this.config,
-            cards,
-        });
+        this._valueChanged(
+            new CustomEvent('value-changed', {
+                detail: {
+                    value: {
+                        type: this.config!.type,
+                        ...this.config,
+                        cards,
+                    },
+                },
+            }),
+        );
     }
 
     private _renderChildCard(
@@ -129,7 +137,6 @@ export class ContainerCardEditor extends BaseCardEditor {
         return html`
             <div class="add-row">
                 <select
-                    .value=${this._newCardType}
                     @change=${(e: Event) => {
                         this._newCardType = (
                             e.target as HTMLSelectElement
@@ -144,17 +151,16 @@ export class ContainerCardEditor extends BaseCardEditor {
                         `,
                     )}
                 </select>
-                <mwc-button outlined icon="add" @click=${this._addCard}>
-                    Ajouter
-                </mwc-button>
+                <button @click=${this._addCard.bind(this)}>Ajouter</button>
             </div>
         `;
     }
 
-    render(): TemplateResult {
+    override render(): TemplateResult {
         if (!this.config || !this.hass) return html``;
 
-        const cards: LovelaceCardConfig[] = this.config.cards ?? [];
+        const cards: LovelaceCardConfig[] =
+            (this.config?.cards as LovelaceCardConfig[]) ?? [];
 
         return html`
             <ha-expansion-panel outlined>
@@ -180,5 +186,5 @@ export class ContainerCardEditor extends BaseCardEditor {
         `;
     }
 
-    static styles: CSSResultGroup = containerCardEditorStyles;
+    static override styles: CSSResultGroup = containerCardEditorStyles;
 }

@@ -1,14 +1,15 @@
 import { LitElement, html, type TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
 import type { HomeAssistant } from 'custom-card-helpers';
-import { HaFormFieldSchema, HaFormSchema } from './schemas';
+import { type HaFormFieldSchema, type HaFormSchema } from './schemas';
+import { BaseCardConfig } from '../cards/base-card';
 
 export class BaseCardEditor extends LitElement {
     @property({ attribute: false }) hass?: HomeAssistant;
-    @property({ attribute: false }) config?: Record<string, any>;
+    @property({ attribute: false }) config?: BaseCardConfig;
 
-    setConfig(config: Record<string, any>): void {
-        this.config = config;
+    setConfig(config: BaseCardConfig): void {
+        this.config = { ...config };
     }
 
     protected getSchema(): HaFormSchema[] {
@@ -29,7 +30,7 @@ export class BaseCardEditor extends LitElement {
         );
     }
 
-    render(): TemplateResult {
+    override render(): TemplateResult {
         if (!this.config || !this.hass) return html``;
 
         return html`
@@ -37,7 +38,7 @@ export class BaseCardEditor extends LitElement {
                 .hass=${this.hass}
                 .data=${this.config}
                 .schema=${this.getSchema()}
-                .computeLabel=${this.computeLabel.bind(this)}
+                .computeLabel=${(s: HaFormSchema) => this.computeLabel(s)}
                 @value-changed=${this._valueChanged}
             ></ha-form>
         `;

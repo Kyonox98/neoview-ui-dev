@@ -13,10 +13,10 @@ export interface TextCardConfig extends BaseCardConfig {
 }
 
 export class TextCard extends BaseCard {
-    protected showHeader = false;
+    protected override showHeader = false;
 
-    setConfig(config: TextCardConfig): void {
-        if (!config.text) throw new Error('text required');
+    override setConfig(config: TextCardConfig): void {
+        if (!config.text) throw new Error('[TextCard] text required');
         super.setConfig(config);
     }
 
@@ -24,11 +24,11 @@ export class TextCard extends BaseCard {
         return this.config as TextCardConfig;
     }
 
-    static getConfigElement() {
+    static getConfigElement(): HTMLElement {
         return document.createElement('neoview-text-card-editor');
     }
 
-    static getStubConfig() {
+    static getStubConfig(): TextCardConfig {
         return {
             type: 'custom:neoview-text-card',
             text: 'Mon texte',
@@ -39,7 +39,11 @@ export class TextCard extends BaseCard {
         };
     }
 
-    protected renderContent(): TemplateResult {
+    override getCardSize(): number {
+        return 1;
+    }
+
+    protected override renderContent(): TemplateResult {
         const cfg = this.textConfig;
 
         const textStyle = [
@@ -55,5 +59,5 @@ export class TextCard extends BaseCard {
         return html`<p class="text" style=${textStyle}>${cfg.text}</p>`;
     }
 
-    static styles: CSSResultGroup = [baseCardStyles, textCardStyles];
+    static override styles: CSSResultGroup = [baseCardStyles, textCardStyles];
 }

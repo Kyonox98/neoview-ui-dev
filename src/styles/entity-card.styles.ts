@@ -17,7 +17,6 @@ export const entityCardStyles = css`
     }
 
     .entity-wrapper > * {
-        // white-space: nowrap;
         flex-shrink: 0;
     }
 
