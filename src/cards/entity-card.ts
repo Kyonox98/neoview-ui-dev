@@ -1,5 +1,5 @@
 import { html, type CSSResultGroup, type TemplateResult } from 'lit';
-import { BaseCard, type BaseCardConfig } from './base-card';
+import { ActionConfig, BaseCard, type BaseCardConfig } from './base-card';
 import { baseCardStyles } from '../styles/base-card.styles';
 import { entityCardStyles } from '../styles/entity-card.styles';
 
@@ -23,8 +23,9 @@ const ALIGN_MAP: Record<string, string> = {
 };
 
 export class EntityCard extends BaseCard {
+    protected override tapAction: ActionConfig = { action: 'more-info' };
+
     override setConfig(config: EntityCardConfig): void {
-        if (!config.entity) throw new Error('[EntityCard] entity required');
         super.setConfig(config);
     }
 
