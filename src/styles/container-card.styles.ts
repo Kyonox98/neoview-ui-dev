@@ -6,6 +6,10 @@ export const containerCardStyles = css`
         --neoview-cards-gap: 8px;
     }
 
+    .card-content {
+        padding: 0;
+    }
+
     .cards-container {
         display: flex;
         flex-direction: column;

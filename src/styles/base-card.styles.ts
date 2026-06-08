@@ -22,10 +22,7 @@ export const baseCardStyles = css`
     }
 
     ha-card {
-        background: rgba(
-            var(--neoview-card-background-color),
-            var(--card-opacity, 0.15)
-        );
+        background: rgba(var(--neoview-card-background-color), var(--card-opacity, 0.15));
         backdrop-filter: blur(var(--neoview-card-blur));
         -webkit-backdrop-filter: blur(var(--neoview-card-blur));
         border: 1px solid var(--neoview-card-border-color);
@@ -42,7 +39,7 @@ export const baseCardStyles = css`
         box-shadow: none;
         backdrop-filter: none;
         -webkit-backdrop-filter: none;
-        padding: 0;
+        padding: 0px;
     }
 
     .card-header {
@@ -61,6 +58,10 @@ export const baseCardStyles = css`
         font-size: var(--neoview-font-size-md);
         opacity: 0.9;
         min-width: 0;
+    }
+
+    ha-card:has(.card-header) .card-content {
+        padding-top: 8px;
     }
 
     .empty-state {
