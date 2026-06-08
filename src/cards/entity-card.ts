@@ -2,6 +2,7 @@ import { html, type CSSResultGroup, type TemplateResult } from 'lit';
 import { ActionConfig, BaseCard, type BaseCardConfig } from './base-card';
 import { baseCardStyles } from '../styles/base-card.styles';
 import { entityCardStyles } from '../styles/entity-card.styles';
+import { resolveEntity } from '../helpers/hass-entity.helper';
 
 export interface EntityCardConfig extends BaseCardConfig {
     entity: string;
@@ -65,22 +66,19 @@ export class EntityCard extends BaseCard {
 
     protected override renderContent(): TemplateResult {
         const cfg = this.entityConfig;
-        const stateObj = this.hass?.states[cfg.entity];
 
-        if (!stateObj) {
-            return this.renderEmptyState(
-                `Entité introuvable : ${cfg.entity}`,
-                'error',
-            );
+        if (!this.hass) return this.renderEmptyState('hass non disponible.', 'error');
+
+        const resolved = resolveEntity(this.hass, cfg.entity, {
+            ...(cfg.name !== undefined && { name: cfg.name }),
+            ...(cfg.unit !== undefined && { unit: cfg.unit }),
+        });
+
+        if (!resolved) {
+            return this.renderEmptyState(`Entité introuvable : ${cfg.entity}`, 'error');
         }
 
-        const stateValue = stateObj?.state ?? 'Indisponible';
-        const domain = cfg.entity.split('.')[0];
-
-        const displayName =
-            cfg.name ?? stateObj?.attributes.friendly_name ?? '';
-        const displayUnit =
-            cfg.unit ?? stateObj?.attributes.unit_of_measurement ?? '';
+        const { stateValue, domain, displayName, displayUnit } = resolved;
 
         const stateColor = cfg.state_color
             ? this.getStateColor(domain, stateValue)
@@ -90,9 +88,7 @@ export class EntityCard extends BaseCard {
             cfg.font_size ? `--entity-font-size: ${cfg.font_size}` : '',
             cfg.font_weight ? `--entity-font-weight: ${cfg.font_weight}` : '',
             cfg.font_style ? `--entity-font-style: ${cfg.font_style}` : '',
-            cfg.align
-                ? `--entity-justify: ${ALIGN_MAP[cfg.align] ?? 'flex-start'}`
-                : '',
+            cfg.align ? `--entity-justify: ${ALIGN_MAP[cfg.align] ?? 'flex-start'}` : '',
             stateColor ? `--entity-color: ${stateColor}` : '',
         ]
             .filter(Boolean)
@@ -101,13 +97,9 @@ export class EntityCard extends BaseCard {
         return html`
             <div class="entity-wrapper" style=${stateStyle}>
                 ${cfg.icon ? html`<ha-icon icon=${cfg.icon}></ha-icon>` : ''}
-                ${displayName
-                    ? html`<span class="name">${displayName}</span>`
-                    : ''}
+                ${displayName ? html`<span class="name">${displayName}</span>` : ''}
                 <span class="state">${stateValue}</span>
-                ${displayUnit
-                    ? html`<span class="unit">${displayUnit}</span>`
-                    : ''}
+                ${displayUnit ? html`<span class="unit">${displayUnit}</span>` : ''}
             </div>
         `;
     }

@@ -7,7 +7,7 @@ import {
 } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import type { HomeAssistant, LovelaceCardConfig } from 'custom-card-helpers';
-import { isHassElement, type HasHass } from '../types';
+import { isNeoviewCard, NEOVIEW_BRAND, NeoviewCard, type HasHass } from '../types';
 import { baseCardStyles } from '../styles/base-card.styles';
 
 export type ActionConfig =
@@ -31,7 +31,9 @@ export interface BaseCardConfig extends LovelaceCardConfig {
     cards?: LovelaceCardConfig[];
 }
 
-export abstract class BaseCard extends LitElement implements HasHass {
+export abstract class BaseCard extends LitElement implements HasHass, NeoviewCard {
+    readonly [NEOVIEW_BRAND] = true as const;
+
     @property({ attribute: false }) hass: HomeAssistant | undefined;
     @state() protected config?: BaseCardConfig;
     @property({ type: Boolean, reflect: true }) seamless = false;
@@ -60,7 +62,7 @@ export abstract class BaseCard extends LitElement implements HasHass {
         if (changedProps.has('hass') && this.hass) {
             const hass = this.hass;
             this.shadowRoot?.querySelectorAll('*').forEach((el) => {
-                if (isHassElement(el)) {
+                if (isNeoviewCard(el)) {
                     el.hass = hass;
                 }
             });
