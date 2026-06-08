@@ -7,6 +7,7 @@ import {
 } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import type { HomeAssistant, LovelaceCardConfig } from 'custom-card-helpers';
+import { isHassElement, type HasHass } from '../types';
 import { baseCardStyles } from '../styles/base-card.styles';
 
 export type ActionConfig =
@@ -30,8 +31,8 @@ export interface BaseCardConfig extends LovelaceCardConfig {
     cards?: LovelaceCardConfig[];
 }
 
-export abstract class BaseCard extends LitElement {
-    @property({ attribute: false }) hass?: HomeAssistant;
+export abstract class BaseCard extends LitElement implements HasHass {
+    @property({ attribute: false }) hass: HomeAssistant | undefined;
     @state() protected config?: BaseCardConfig;
     @property({ type: Boolean, reflect: true }) seamless = false;
 
@@ -59,9 +60,8 @@ export abstract class BaseCard extends LitElement {
         if (changedProps.has('hass') && this.hass) {
             const hass = this.hass;
             this.shadowRoot?.querySelectorAll('*').forEach((el) => {
-                const tag = el.tagName.toLowerCase();
-                if (tag === 'hui-card' || tag.startsWith('neoview-')) {
-                    (el as HTMLElement & { hass?: HomeAssistant }).hass = hass;
+                if (isHassElement(el)) {
+                    el.hass = hass;
                 }
             });
         }
@@ -100,11 +100,7 @@ export abstract class BaseCard extends LitElement {
                 break;
             case 'call-service': {
                 const [domain, service] = action.service.split('.');
-                this.hass.callService(
-                    domain,
-                    service,
-                    action.service_data ?? {},
-                );
+                this.hass.callService(domain, service, action.service_data ?? {});
                 break;
             }
         }
@@ -145,21 +141,13 @@ export abstract class BaseCard extends LitElement {
 
     override render(): TemplateResult {
         const displayHeader =
-            this.showHeader &&
-            (this.config?.show_title ?? true) &&
-            !!this.config?.title;
+            this.showHeader && (this.config?.show_title ?? true) && !!this.config?.title;
 
-        const hasAction =
-            this.tapAction.action !== 'none' ||
-            this.holdAction.action !== 'none';
+        const hasAction = this.tapAction.action !== 'none' || this.holdAction.action !== 'none';
 
         const inlineStyles = [
-            this.config?.padding != null
-                ? `--card-padding: ${this.config.padding}px`
-                : '',
-            this.config?.opacity != null
-                ? `--card-opacity: ${this.config.opacity}`
-                : '',
+            this.config?.padding != null ? `--card-padding: ${this.config.padding}px` : '',
+            this.config?.opacity != null ? `--card-opacity: ${this.config.opacity}` : '',
             hasAction ? 'cursor: pointer' : '',
         ]
             .filter(Boolean)
@@ -173,9 +161,7 @@ export abstract class BaseCard extends LitElement {
                 @pointerup=${hasAction ? this._handlePointerUp : undefined}
                 @pointercancel=${hasAction ? this._handlePointerUp : undefined}
             >
-                ${displayHeader
-                    ? html`<div class="card-header">${this.config!.title}</div>`
-                    : ''}
+                ${displayHeader ? html`<div class="card-header">${this.config!.title}</div>` : ''}
                 <div class="card-content">${this.renderContent()}</div>
             </ha-card>
         `;

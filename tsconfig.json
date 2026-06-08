@@ -12,7 +12,9 @@
     "noUnusedParameters": true,
     "isolatedModules": true,
     "skipLibCheck": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+	"noFallthroughCasesInSwitch": true,
+    "exactOptionalPropertyTypes": true
   },
   "include": ["src/**/*.ts"]
 }
