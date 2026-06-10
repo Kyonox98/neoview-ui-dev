@@ -6,7 +6,7 @@ import {
     type CSSResultGroup,
 } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import type { HomeAssistant, LovelaceCardConfig } from 'custom-card-helpers';
+import { fireEvent, type HomeAssistant, type LovelaceCardConfig } from 'custom-card-helpers';
 import { isNeoviewCard, NEOVIEW_BRAND, NeoviewCard, type HasHass } from '../types';
 import { baseCardStyles } from '../styles/base-card.styles';
 
@@ -57,6 +57,10 @@ export abstract class BaseCard extends LitElement implements HasHass, NeoviewCar
         return childCount > 0 ? Math.max(1, Math.ceil(childCount / 2)) : 3;
     }
 
+    protected getEntityId(): string | undefined {
+        return undefined;
+    }
+
     protected override updated(changedProps: PropertyValues): void {
         super.updated(changedProps);
         if (changedProps.has('hass') && this.hass) {
@@ -71,35 +75,30 @@ export abstract class BaseCard extends LitElement implements HasHass, NeoviewCar
 
     private _executeAction(action: ActionConfig): void {
         if (!this.hass || !action || action.action === 'none') return;
-        const entity = (this.config as any)?.entity;
+        const entity = this.getEntityId();
 
         switch (action.action) {
             case 'more-info':
-                this.dispatchEvent(
-                    new CustomEvent('hass-more-info', {
-                        bubbles: true,
-                        composed: true,
-                        detail: { entityId: entity },
-                    }),
-                );
+                if (!entity) return;
+                fireEvent(this, 'hass-more-info', { entityId: entity });
                 break;
+
             case 'toggle':
+                if (!entity) return;
                 this.hass.callService('homeassistant', 'toggle', {
                     entity_id: entity,
                 });
                 break;
+
             case 'navigate':
                 history.pushState(null, '', action.navigation_path);
-                this.dispatchEvent(
-                    new CustomEvent('location-changed', {
-                        bubbles: true,
-                        composed: true,
-                    }),
-                );
+                fireEvent(this, 'location-changed', { replace: false });
                 break;
+
             case 'url':
                 window.open(action.url_path, '_blank', 'noopener');
                 break;
+
             case 'call-service': {
                 const [domain, service] = action.service.split('.');
                 this.hass.callService(domain, service, action.service_data ?? {});

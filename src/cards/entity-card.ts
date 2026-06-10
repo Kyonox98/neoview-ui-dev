@@ -30,6 +30,10 @@ export class EntityCard extends BaseCard {
         super.setConfig(config);
     }
 
+    protected override getEntityId(): string | undefined {
+        return this.entityConfig?.entity;
+    }
+
     private get entityConfig(): EntityCardConfig {
         return this.config as EntityCardConfig;
     }
