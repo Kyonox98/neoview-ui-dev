@@ -1,11 +1,5 @@
-import {
-    type CSSResultGroup,
-    type TemplateResult,
-    type PropertyValues,
-    html,
-} from 'lit';
+import { type CSSResultGroup, type TemplateResult, type PropertyValues, html } from 'lit';
 import { BaseCard, type BaseCardConfig } from './base-card';
-import { baseCardStyles } from '../styles/base-card.styles';
 import { containerCardStyles } from '../styles/container-card.styles';
 
 export type ContainerLayout = 'vertical' | 'horizontal' | 'grid';
@@ -61,9 +55,7 @@ export class ContainerCard extends BaseCard {
 
         const layout = this.resolveLayout();
         const columns =
-            layout === 'grid'
-                ? (this.containerConfig?.columns ?? 2)
-                : this.config.cards.length;
+            layout === 'grid' ? (this.containerConfig?.columns ?? 2) : this.config.cards.length;
         const showDivider = this.containerConfig?.divider ?? false;
 
         if (layout === 'vertical') {
@@ -71,9 +63,7 @@ export class ContainerCard extends BaseCard {
                 <div class="cards-container">
                     ${this.config.cards.map(
                         (cardConfig, index) => html`
-                            ${index > 0 && showDivider
-                                ? html`<div class="divider"></div>`
-                                : ''}
+                            ${index > 0 && showDivider ? html`<div class="divider"></div>` : ''}
                             <hui-card
                                 .config=${{ ...cardConfig, seamless: true }}
                                 .hass=${this.hass}
@@ -84,10 +74,7 @@ export class ContainerCard extends BaseCard {
             `;
         }
 
-        const cols: (typeof this.config.cards)[] = Array.from(
-            { length: columns },
-            () => [],
-        );
+        const cols: (typeof this.config.cards)[] = Array.from({ length: columns }, () => []);
         this.config.cards.forEach((card, i) => cols[i % columns].push(card));
 
         return html`
@@ -95,8 +82,7 @@ export class ContainerCard extends BaseCard {
                 ${cols.map(
                     (colCards, colIndex) => html`
                         <div
-                            class="column ${colIndex < columns - 1 &&
-                            showDivider
+                            class="column ${colIndex < columns - 1 && showDivider
                                 ? 'has-divider'
                                 : ''}"
                         >
@@ -123,8 +109,7 @@ export class ContainerCard extends BaseCard {
 
         const layout = this.resolveLayout();
         const columns = this.containerConfig?.columns ?? 2;
-        const container =
-            this.shadowRoot?.querySelector<HTMLElement>('.cards-container');
+        const container = this.shadowRoot?.querySelector<HTMLElement>('.cards-container');
 
         if (!container) return;
 
@@ -138,17 +123,13 @@ export class ContainerCard extends BaseCard {
         }
 
         if (this.containerConfig?.gap != null) {
-            container.style.setProperty(
-                '--cards-gap',
-                `${this.containerConfig.gap}px`,
-            );
+            container.style.setProperty('--cards-gap', `${this.containerConfig.gap}px`);
         } else {
             container.style.removeProperty('--cards-gap');
         }
     }
 
-    static override styles: CSSResultGroup = [
-        baseCardStyles,
-        containerCardStyles,
-    ];
+    static override get styles(): CSSResultGroup {
+        return [super.styles, containerCardStyles];
+    }
 }

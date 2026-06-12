@@ -1,6 +1,5 @@
 import { html, type CSSResultGroup, type TemplateResult } from 'lit';
 import { BaseCard, type BaseCardConfig } from './base-card';
-import { baseCardStyles } from '../styles/base-card.styles';
 import { textCardStyles } from '../styles/text-card.styles';
 
 export interface TextCardConfig extends BaseCardConfig {
@@ -63,5 +62,7 @@ export class TextCard extends BaseCard {
         return html`<p class="text" style=${textStyle}>${cfg.text}</p>`;
     }
 
-    static override styles: CSSResultGroup = [baseCardStyles, textCardStyles];
+    static override get styles(): CSSResultGroup {
+        return [super.styles, textCardStyles];
+    }
 }

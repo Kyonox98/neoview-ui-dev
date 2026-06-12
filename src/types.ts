@@ -2,6 +2,18 @@ import type { HomeAssistant, LovelaceCardConfig } from 'custom-card-helpers';
 
 export const NEOVIEW_BRAND = '__neoview__' as const;
 
+export type ActionConfig =
+    | { action: 'none' }
+    | { action: 'more-info' }
+    | { action: 'toggle' }
+    | { action: 'navigate'; navigation_path: string }
+    | {
+          action: 'call-service';
+          service: string;
+          service_data?: Record<string, unknown>;
+      }
+    | { action: 'url'; url_path: string };
+
 export interface HasHass {
     hass: HomeAssistant | undefined;
 }

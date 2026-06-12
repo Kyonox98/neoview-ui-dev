@@ -7,20 +7,8 @@ import {
 } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { fireEvent, type HomeAssistant, type LovelaceCardConfig } from 'custom-card-helpers';
-import { isNeoviewCard, NEOVIEW_BRAND, NeoviewCard, type HasHass } from '../types';
+import { ActionConfig, isNeoviewCard, NEOVIEW_BRAND, NeoviewCard, type HasHass } from '../types';
 import { baseCardStyles } from '../styles/base-card.styles';
-
-export type ActionConfig =
-    | { action: 'none' }
-    | { action: 'more-info' }
-    | { action: 'toggle' }
-    | { action: 'navigate'; navigation_path: string }
-    | {
-          action: 'call-service';
-          service: string;
-          service_data?: Record<string, unknown>;
-      }
-    | { action: 'url'; url_path: string };
 
 export interface BaseCardConfig extends LovelaceCardConfig {
     title?: string;

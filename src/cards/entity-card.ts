@@ -1,6 +1,6 @@
 import { html, type CSSResultGroup, type TemplateResult } from 'lit';
-import { ActionConfig, BaseCard, type BaseCardConfig } from './base-card';
-import { baseCardStyles } from '../styles/base-card.styles';
+import { BaseCard, type BaseCardConfig } from './base-card';
+import { ActionConfig } from './../types';
 import { entityCardStyles } from '../styles/entity-card.styles';
 import { resolveEntity } from '../helpers/hass-entity.helper';
 
@@ -108,5 +108,7 @@ export class EntityCard extends BaseCard {
         `;
     }
 
-    static override styles: CSSResultGroup = [baseCardStyles, entityCardStyles];
+    static override get styles(): CSSResultGroup {
+        return [super.styles, entityCardStyles];
+    }
 }
