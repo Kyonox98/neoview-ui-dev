@@ -12,10 +12,6 @@ export interface ContainerCardConfig extends BaseCardConfig {
 }
 
 export class ContainerCard extends BaseCard {
-    override setConfig(config: ContainerCardConfig): void {
-        super.setConfig(config);
-    }
-
     private get containerConfig(): ContainerCardConfig {
         return this.config as ContainerCardConfig;
     }

@@ -6,9 +6,16 @@ import {
     type CSSResultGroup,
 } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import { fireEvent, type HomeAssistant, type LovelaceCardConfig } from 'custom-card-helpers';
-import { ActionConfig, isNeoviewCard, NEOVIEW_BRAND, NeoviewCard, type HasHass } from '../types';
+import type { HomeAssistant, LovelaceCardConfig } from 'custom-card-helpers';
+import {
+    isNeoviewCard,
+    NEOVIEW_BRAND,
+    NeoviewCard,
+    type HasHass,
+    type ActionConfig,
+} from '../types';
 import { baseCardStyles } from '../styles/base-card.styles';
+import { executeAction } from '../helpers/action.helper';
 
 export interface BaseCardConfig extends LovelaceCardConfig {
     title?: string;
@@ -61,46 +68,12 @@ export abstract class BaseCard extends LitElement implements HasHass, NeoviewCar
         }
     }
 
-    private _executeAction(action: ActionConfig): void {
-        if (!this.hass || !action || action.action === 'none') return;
-        const entity = this.getEntityId();
-
-        switch (action.action) {
-            case 'more-info':
-                if (!entity) return;
-                fireEvent(this, 'hass-more-info', { entityId: entity });
-                break;
-
-            case 'toggle':
-                if (!entity) return;
-                this.hass.callService('homeassistant', 'toggle', {
-                    entity_id: entity,
-                });
-                break;
-
-            case 'navigate':
-                history.pushState(null, '', action.navigation_path);
-                fireEvent(this, 'location-changed', { replace: false });
-                break;
-
-            case 'url':
-                window.open(action.url_path, '_blank', 'noopener');
-                break;
-
-            case 'call-service': {
-                const [domain, service] = action.service.split('.');
-                this.hass.callService(domain, service, action.service_data ?? {});
-                break;
-            }
-        }
-    }
-
     private _handlePointerDown(ev: PointerEvent): void {
         ev.stopPropagation();
         this._holdTriggered = false;
         this._holdTimer = setTimeout(() => {
             this._holdTriggered = true;
-            this._executeAction(this.holdAction);
+            executeAction(this, this.hass, this.holdAction, this.getEntityId());
         }, 500);
     }
 
@@ -112,7 +85,7 @@ export abstract class BaseCard extends LitElement implements HasHass, NeoviewCar
     private _handleTap(ev: MouseEvent): void {
         ev.stopPropagation();
         if (this._holdTriggered) return;
-        this._executeAction(this.tapAction);
+        executeAction(this, this.hass, this.tapAction, this.getEntityId());
     }
 
     protected renderEmptyState(

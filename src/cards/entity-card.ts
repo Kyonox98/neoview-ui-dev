@@ -1,8 +1,10 @@
 import { html, type CSSResultGroup, type TemplateResult } from 'lit';
 import { BaseCard, type BaseCardConfig } from './base-card';
-import { ActionConfig } from './../types';
 import { entityCardStyles } from '../styles/entity-card.styles';
 import { resolveEntity } from '../helpers/hass-entity.helper';
+import { getEntityStateColor } from '../helpers/state-color.helper';
+import { ALIGN_MAP } from '../helpers/layout.helper';
+import type { ActionConfig } from '../types';
 
 export interface EntityCardConfig extends BaseCardConfig {
     entity: string;
@@ -17,18 +19,8 @@ export interface EntityCardConfig extends BaseCardConfig {
     color?: string;
 }
 
-const ALIGN_MAP: Record<string, string> = {
-    left: 'flex-start',
-    center: 'center',
-    right: 'flex-end',
-};
-
 export class EntityCard extends BaseCard {
     protected override tapAction: ActionConfig = { action: 'more-info' };
-
-    override setConfig(config: EntityCardConfig): void {
-        super.setConfig(config);
-    }
 
     protected override getEntityId(): string | undefined {
         return this.entityConfig?.entity;
@@ -64,10 +56,6 @@ export class EntityCard extends BaseCard {
         return 2;
     }
 
-    private getStateColor(domain: string, stateValue: string): string {
-        return `var(--state-${domain}-${stateValue}-color, var(--primary-text-color))`;
-    }
-
     protected override renderContent(): TemplateResult {
         const cfg = this.entityConfig;
 
@@ -85,7 +73,7 @@ export class EntityCard extends BaseCard {
         const { stateValue, domain, displayName, displayUnit } = resolved;
 
         const stateColor = cfg.state_color
-            ? this.getStateColor(domain, stateValue)
+            ? getEntityStateColor(domain, stateValue)
             : (cfg.color ?? undefined);
 
         const stateStyle = [

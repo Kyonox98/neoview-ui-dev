@@ -14,11 +14,6 @@ export interface TextCardConfig extends BaseCardConfig {
 export class TextCard extends BaseCard {
     protected override showHeader = false;
 
-    override setConfig(config: TextCardConfig): void {
-        // if (!config.text) throw new Error('[TextCard] text required');
-        super.setConfig(config);
-    }
-
     private get textConfig(): TextCardConfig {
         return this.config as TextCardConfig;
     }
